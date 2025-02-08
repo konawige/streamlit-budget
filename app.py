@@ -1,9 +1,7 @@
 import boto3
-from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 from io import StringIO
-import os
 import plotly.express as px
 
 from utils import BUCKET_NAME, read_csv_from_s3
@@ -12,13 +10,38 @@ st.set_page_config(page_title="Trend", page_icon=":moneybag:", layout="wide")
 st.markdown("# Sommaire")
 st.sidebar.header("Accueil")
 
-# Load environment variables from .env file
-load_dotenv()
+import hmac
 
-# AWS credentials and bucket information
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-is_prod = True if os.getenv('PRODUCTION_ENV') == '1' else False
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["password"], st.secrets["credentials"]["password"]):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        st.session_state["password_correct"] = False
+
+    if st.session_state["password_correct"]:
+        return True
+    else:
+        st.text_input("Password", type="password", on_change=password_entered, key="password")
+        if st.session_state["password_correct"] is False:
+            st.error("😕 Password incorrect")
+        return False
+
+if not check_password():
+    st.stop()
+
+# Access secrets
+aws_access_key_id = st.secrets["credentials"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["credentials"]["aws_secret_access_key"]
+
+is_prod = True if st.secrets["env"]["production_env"] == "1" else False
+
 
 ENV_FOLDER = 'prod' if is_prod else 'local'
 FILE_KEY_OUTPUT = '/output/combined_transactions.csv'

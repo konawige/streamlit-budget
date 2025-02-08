@@ -1,6 +1,4 @@
-import os
 import boto3
-from dotenv import load_dotenv
 import streamlit as st
 import pandas as pd
 
@@ -11,13 +9,16 @@ st.set_page_config(page_title="New transactions", page_icon=":form:", layout="wi
 st.markdown("# Import new transactions")
 st.sidebar.header("Import")
 
-# Load environment variables from .env file
-load_dotenv()
+if st.session_state["password_correct"] is False:
+    st.info("Please enter the password in the homepage to access the data.")
+    st.stop()
 
-# AWS credentials and bucket information
-aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-is_prod = True if os.getenv('PRODUCTION_ENV') == '1' else False
+# Access secrets
+aws_access_key_id = st.secrets["credentials"]["aws_access_key_id"]
+aws_secret_access_key = st.secrets["credentials"]["aws_secret_access_key"]
+
+is_prod = True if st.secrets["env"]["production_env"] == "1" else False
+
 ENV_FOLDER = 'prod' if is_prod else 'local'
 
 bucket_name = "wikomexpensetracker"

@@ -1,3 +1,4 @@
 .env
 st-bdgt-env
 .idea
+.streamlit/secrets.toml
