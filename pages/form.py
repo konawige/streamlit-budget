@@ -9,7 +9,9 @@ st.set_page_config(page_title="New transactions", page_icon=":form:", layout="wi
 st.markdown("# Import new transactions")
 st.sidebar.header("Import")
 
-if st.session_state["password_correct"] is False:
+# validate session state has the key password_correct
+
+if "password_correct" not in st.session_state or st.session_state["password_correct"] is  False:
     st.info("Please enter the password in the homepage to access the data.")
     st.stop()
 

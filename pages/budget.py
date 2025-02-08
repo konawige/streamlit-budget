@@ -6,7 +6,7 @@ st.set_page_config(page_title="Budget", page_icon=":moneybag:", layout="wide")
 st.markdown("# Budget 2025")
 st.sidebar.header("Budget 2025")
 
-if st.session_state["password_correct"] is False:
+if "password_correct" not in st.session_state or st.session_state["password_correct"] is  False:
     st.info("Please enter the password in the homepage to access the data.")
     st.stop()
 
