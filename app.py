@@ -81,9 +81,12 @@ current_month_summary = df_output[df_output['Month'] == current_month].pivot_tab
 col1, col2 = st.columns((1,2))
 with col1:
     st.markdown(f"## Mois courant: {current_month}")
-    col11, col12 = st.columns(2)
-    col11.metric("Revenus", current_month_summary["credit"])
-    col12.metric("Depenses", current_month_summary["expense"])
+    if 'expense' in current_month_summary.columns and 'credit' in current_month_summary.columns:
+        col11, col12 = st.columns(2)
+        col11.metric("Revenus", current_month_summary["credit"])
+        col12.metric("Depenses", current_month_summary["expense"])
+    else:
+        st.warning("Pas de donnees dispo pour ce mois")
 
 with col2:
     st.plotly_chart(fig_summary)
